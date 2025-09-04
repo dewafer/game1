@@ -1,42 +1,110 @@
-const charSpeedSpan = document.getElementById('charSpeed');
-const wordSpeedSpan = document.getElementById('wordSpeed');
-let startTime = null;
-let targetText = document.getElementById('targetText').textContent;
-const targetTextDiv = document.getElementById('targetText');
-const inputArea = document.getElementById('inputArea');
-const errorRateSpan = document.getElementById('errorRate');
-const freqTableDiv = document.getElementById('freqTable');
-const urlInput = document.getElementById('urlInput');
-const fetchBtn = document.getElementById('fetchBtn');
+// 配置常量
+const CONFIG = {
+    SCROLL_LENGTH: 40,          // 显示窗口长度
+    SEARCH_DEPTH: 3,           // 查找正文的最小深度
+    PROXY_URL: 'http://127.0.0.1:8080/proxy'
+};
+
+// DOM元素集中管理
+const DOM = {
+    targetTextDiv: document.getElementById('targetText'),
+    inputArea: document.getElementById('inputArea'),
+    errorRateSpan: document.getElementById('errorRate'),
+    charSpeedSpan: document.getElementById('charSpeed'),
+    wordSpeedSpan: document.getElementById('wordSpeed'),
+    freqTableDiv: document.getElementById('freqTable'),
+    urlInput: document.getElementById('urlInput'),
+    fetchBtn: document.getElementById('fetchBtn'),
+    skipBtn: document.getElementById('skipBtn')
+};
+
+// 游戏状态
+let gameState = {
+    targetText: DOM.targetTextDiv.textContent,
+    startTime: null
+};
+
+function skipCurrentWindow() {
+    const userInput = DOM.inputArea.value;
+    let start = userInput.length;
+    let end = start + CONFIG.SCROLL_LENGTH;
+    let skipText = gameState.targetText.slice(start, end);
+    DOM.inputArea.value = userInput + skipText;
+    updateVisibleText();
+}
+
+function resetGameStats() {
+    DOM.errorRateSpan.textContent = '0%';
+    DOM.charSpeedSpan.textContent = '0 字符/分钟';
+    DOM.wordSpeedSpan.textContent = '0 单词/分钟';
+    gameState.startTime = null;
+    DOM.freqTableDiv.innerHTML = renderFreqTable({});
+}
 
 function updateVisibleText() {
-    const scrollLen = 40; // 显示窗口长度，可调整
-    let userInput = inputArea.value;
+    let userInput = DOM.inputArea.value;
     let inputLen = userInput.length;
-    let start = Math.max(0, inputLen - scrollLen);
-    let end = inputLen + scrollLen;
+    let start = Math.max(0, inputLen - CONFIG.SCROLL_LENGTH);
+    let end = inputLen + CONFIG.SCROLL_LENGTH;
     let display = '';
+    
     // 已输入部分
     for (let i = start; i < inputLen; i++) {
-        if (i < targetText.length) {
+        if (i < gameState.targetText.length) {
             if (userInput[i] === undefined) {
                 display += `<span style='color:#bbb;'> </span>`;
-            } else if (userInput[i] === targetText[i]) {
-                display += `<span style='color:#bbb;'>${targetText[i]}</span>`;
+            } else if (userInput[i] === gameState.targetText[i]) {
+                display += `<span style='color:#bbb;'>${gameState.targetText[i]}</span>`;
             } else {
-                display += `<span style='color:red;'>${targetText[i]}</span>`;
+                display += `<span style='color:red;'>${gameState.targetText[i]}</span>`;
             }
         }
     }
+    
     // 光标
     display += '<span style="color:#2196f3;font-weight:bold;">|</span>';
+    
     // 未输入部分
     for (let i = inputLen; i < end; i++) {
-        if (i < targetText.length) {
-            display += targetText[i];
+        if (i < gameState.targetText.length) {
+            display += gameState.targetText[i];
         }
     }
-    targetTextDiv.innerHTML = display;
+    
+    DOM.targetTextDiv.innerHTML = display;
+}
+
+function calculateTypingStats(userInput) {
+    // 计算错误率
+    let errors = 0;
+    let total = userInput.length;
+    for (let i = 0; i < userInput.length; i++) {
+        if (userInput[i] !== gameState.targetText[i]) errors++;
+    }
+    const errorRate = total === 0 ? 0 : (errors / total * 100).toFixed(2);
+    
+    // 计算速度
+    if (!gameState.startTime && total > 0) {
+        gameState.startTime = Date.now();
+    }
+    let elapsedMin = ((Date.now() - gameState.startTime) / 60000);
+    let charSpeed = elapsedMin > 0 ? (total / elapsedMin).toFixed(2) : '0';
+    let wordCount = userInput.trim().split(/\s+/).filter(Boolean).length;
+    let wordSpeed = elapsedMin > 0 ? (wordCount / elapsedMin).toFixed(2) : '0';
+    
+    return { errorRate, charSpeed, wordSpeed };
+}
+
+function updateStatsDisplay(userInput) {
+    const stats = calculateTypingStats(userInput);
+    
+    DOM.errorRateSpan.textContent = stats.errorRate + '%';
+    DOM.charSpeedSpan.textContent = stats.charSpeed + ' 字符/分钟';
+    DOM.wordSpeedSpan.textContent = stats.wordSpeed + ' 单词/分钟';
+    
+    // 字频统计
+    const freq = getCharFrequency(userInput);
+    DOM.freqTableDiv.innerHTML = renderFreqTable(freq);
 }
 
 function getCharFrequency(str) {
@@ -57,72 +125,119 @@ function renderFreqTable(freq) {
     return html;
 }
 
-inputArea.addEventListener('input', () => {
-    const userInput = inputArea.value;
-    let errors = 0;
-    let total = userInput.length;
-    for (let i = 0; i < userInput.length; i++) {
-        if (userInput[i] !== targetText[i]) errors++;
-    }
-    const errorRate = total === 0 ? 0 : (errors / total * 100).toFixed(2);
-    errorRateSpan.textContent = errorRate + '%';
-
-    // 统计速度
-    if (!startTime && total > 0) {
-        startTime = Date.now();
-    }
-    let elapsedMin = ((Date.now() - startTime) / 60000);
-    let charSpeed = elapsedMin > 0 ? (total / elapsedMin).toFixed(2) : '0';
-    let wordCount = userInput.trim().split(/\s+/).filter(Boolean).length;
-    let wordSpeed = elapsedMin > 0 ? (wordCount / elapsedMin).toFixed(2) : '0';
-    charSpeedSpan.textContent = charSpeed + ' 字符/分钟';
-    wordSpeedSpan.textContent = wordSpeed + ' 单词/分钟';
-
-    // 字频统计
-    const freq = getCharFrequency(userInput);
-    freqTableDiv.innerHTML = renderFreqTable(freq);
-
-    // 目标文本滚动显示
+function handleInput() {
+    const userInput = DOM.inputArea.value;
+    updateStatsDisplay(userInput);
     updateVisibleText();
-});
+}
 
-fetchBtn.addEventListener('click', async () => {
-    inputArea.value = '';
-    const url = urlInput.value.trim();
+function collectNodesAtDepth(node, depth) {
+    const candidates = [];
+    
+    function collect(currentNode, currentDepth) {
+        if (currentDepth === 0) {
+            candidates.push(currentNode);
+        } else {
+            for (let child of currentNode.children) {
+                collect(child, currentDepth - 1);
+            }
+        }
+    }
+    
+    collect(node, depth);
+    return candidates;
+}
+
+function findBestContentNode(body) {
+    let candidates = [];
+    
+    // 尝试从指定深度开始查找
+    candidates = collectNodesAtDepth(body, CONFIG.SEARCH_DEPTH);
+    
+    // 如果没有足够深度的节点，则回退到更浅层
+    let fallbackDepth = CONFIG.SEARCH_DEPTH - 1;
+    while (candidates.length === 0 && fallbackDepth >= 0) {
+        candidates = collectNodesAtDepth(body, fallbackDepth);
+        fallbackDepth--;
+    }
+    
+    // 找到文本最多的节点
+    let maxText = '';
+    let maxNode = null;
+    for (let node of candidates) {
+        let allText = node.innerText ? node.innerText.replace(/\s+/g, ' ').trim() : '';
+        if (allText.length > maxText.length) {
+            maxText = allText;
+            maxNode = node;
+        }
+    }
+    
+    return maxText;
+}
+
+async function fetchWebContent(url) {
+    const proxyUrl = `${CONFIG.PROXY_URL}?url=${encodeURIComponent(url)}`;
+    const res = await fetch(proxyUrl);
+    const html = await res.text();
+    
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const body = doc.body;
+    
+    if (!body) {
+        throw new Error('无法解析网页内容');
+    }
+    
+    const content = findBestContentNode(body);
+    if (!content) {
+        throw new Error('未找到合适正文');
+    }
+    
+    return content;
+}
+
+async function handleFetch() {
+    DOM.inputArea.value = '';
+    const url = DOM.urlInput.value.trim();
+    
     if (!url) {
         alert('请输入网页地址');
         return;
     }
-    targetTextDiv.textContent = '正在抓取网页正文...';
+    
+    DOM.targetTextDiv.textContent = '正在抓取网页正文...';
+    
     try {
-        // 通过本地代理服务抓取网页内容
-        const proxyUrl = `http://127.0.0.1:8080/proxy?url=${encodeURIComponent(url)}`;
-        const res = await fetch(proxyUrl);
-        const html = await res.text();
-        // 只抓取 <main> 标签中的内容
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        let main = doc.querySelector('main');
-        let text = main ? main.innerText : '';
-        text = text.replace(/\s+/g, ' ').trim();
-        if (!text) {
-            targetTextDiv.textContent = '未找到 <main> 正文';
-            targetText = '';
-        } else {
-            targetText = text;
-            inputArea.value = '';
-            updateVisibleText();
-        }
-    errorRateSpan.textContent = '0%';
-    charSpeedSpan.textContent = '0 字符/分钟';
-    wordSpeedSpan.textContent = '0 单词/分钟';
-    startTime = null;
-    freqTableDiv.innerHTML = renderFreqTable({});
+        const content = await fetchWebContent(url);
+        gameState.targetText = content;
+        DOM.inputArea.value = '';
+        updateVisibleText();
+        resetGameStats();
     } catch (e) {
-        targetTextDiv.textContent = '抓取失败: ' + e.message;
-        targetText = '';
+        DOM.targetTextDiv.textContent = '抓取失败: ' + e.message;
+        gameState.targetText = '';
     }
-});
+}
 
-// 初始化字频表
-freqTableDiv.innerHTML = renderFreqTable({});
+// 事件监听器注册
+function initEventListeners() {
+    DOM.inputArea.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            skipCurrentWindow();
+        }
+    });
+
+    DOM.inputArea.addEventListener('input', handleInput);
+    DOM.fetchBtn.addEventListener('click', handleFetch);
+    DOM.skipBtn.addEventListener('click', skipCurrentWindow);
+}
+
+// 初始化应用
+function init() {
+    initEventListeners();
+    resetGameStats();
+}
+
+// 启动应用
+init();
