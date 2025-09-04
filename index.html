@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>打字练习游戏</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        #targetText { font-size: 1.2em; margin-bottom: 20px; }
+        #inputArea { width: 100%; font-size: 1.2em; padding: 8px; }
+        #stats { margin-top: 20px; }
+        .error { color: red; }
+        table { border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 4px 8px; }
+    </style>
+</head>
+<body>
+    <h1>打字练习游戏</h1>
+    <div style="margin-bottom: 16px;">
+        <input type="text" id="urlInput" placeholder="输入网页地址" style="width: 300px;">
+        <button id="fetchBtn">抓取链接</button>
+    </div>
+    <div id="targetText" style="white-space: pre-wrap; background:#f8f8f8; padding:10px; border-radius:4px; min-height:48px; margin-bottom:10px;"></div>
+    <div style="background:#eef; padding:10px; border-radius:4px;">
+        <label for="inputArea" style="display:block; margin-bottom:4px;">正在输入：</label>
+        <textarea id="inputArea" rows="3" placeholder="开始输入..." style="width:100%; font-size:1.2em;" autofocus></textarea>
+    </div>
+    <div id="stats">
+    <div>错误率: <span id="errorRate">0%</span></div>
+    <div>字符速度: <span id="charSpeed">0 字符/分钟</span></div>
+    <div>单词速度: <span id="wordSpeed">0 单词/分钟</span></div>
+    <div>字频统计:</div>
+    <div id="freqTable"></div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
