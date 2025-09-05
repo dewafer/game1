@@ -1,0 +1,39 @@
+The quick brown fox jumps over the lazy dog. This sentence contains every letter of the alphabet at least once, making it perfect for typing practice. Programming is the art of telling another human what one wants the computer to do. Good code is its own best documentation. As you think about adding a comment, ask yourself what you could do to make the code so clear that a comment becomes unnecessary.
+
+The best programs are written so that computing machines can perform them quickly and so that human beings can understand them clearly. A program is never less than 90% complete, and never more than 95% complete. There are only two hard things in computer science: cache invalidation and naming things. Any fool can write code that a computer can understand. Good programmers write code that humans can understand.
+
+First, solve the problem. Then, write the code. Code is like humor. When you have to explain it, it is bad. Make it work, make it right, make it fast. The most important property of a program is whether it accomplishes the intention of its user. Simplicity is the ultimate sophistication. Talk is cheap. Show me the code.
+
+Programming today is a race between software engineers striving to build bigger and better idiot-proof programs, and the universe trying to produce bigger and better idiots. So far, the universe is winning. The computer was born to solve problems that did not exist before. Software is a great combination between artistry and engineering.
+
+In the world of technology, debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it. The function of good software is to make the complex appear to be simple. Walking on water and developing software from a specification are easy if both are frozen.
+
+Experience is the name everyone gives to their mistakes. The trouble with programmers is that you can never tell what a programmer is doing until it's too late. Sometimes it pays to stay in bed on Monday, rather than spending the rest of the week debugging Monday's code. It's not a bug; it's an undocumented feature.
+
+Software and cathedrals are much the same: first we build them, then we pray. The best way to get a project done faster is to start sooner. Every great developer you know got there by solving problems they were unqualified to solve until they actually did it. The most disastrous thing that you can ever learn is your first programming language.
+
+Measuring programming progress by lines of code is like measuring aircraft building progress by weight. The bearing of a child takes nine months, no matter how many women are assigned. Documentation is like sex: when it is good, it is very, very good; and when it is bad, it is better than nothing.
+
+Computer science education cannot make anybody an expert programmer any more than studying brushes and pigment can make somebody an expert painter. The key to performance is elegance, not battalions of special cases. Programming is not about typing, it's about thinking. Code never lies, comments sometimes do.
+
+Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live. Programs must be written for people to read, and only incidentally for machines to execute. The cheapest, fastest, and most reliable components are those that aren't there.
+
+Before software can be reusable it first has to be usable. Premature optimization is the root of all evil. Programming can be fun, so can cryptography; however they should not be combined. If debugging is the process of removing software bugs, then programming must be the process of putting them in.
+
+A good programmer is someone who always looks both ways before crossing a one-way street. Software developers like to solve problems. If there are no problems handily available, they will create their own problems. The first 90 percent of the code accounts for the first 90 percent of the development time. The remaining 10 percent of the code accounts for the other 90 percent of the development time.
+
+Programming is breaking of one big impossible task into several very small possible tasks. The best method for accelerating a computer is the one that boosts it by 9.8 m/s2. If you want to set off and go develop some grand new thing, you don't need millions of dollars of capitalization. You need enough pizza and Diet Coke to stick in your refrigerator, a cheap PC to work on and the dedication to go through with it.
+
+Testing can only prove the presence of bugs, not their absence. Software undergoes beta testing shortly before it's released. Beta is Latin for still doesn't work. The most likely way for the world to be destroyed, most experts agree, is by accident. That's where we come in; we're computer professionals. We cause accidents.
+
+Programming is thinking, not typing. The sooner you start to code, the longer the program will take. The trouble with having an open mind, of course, is that people keep coming along and trying to put things in it. There are two ways to write error-free programs; only the third one works.
+
+A computer lets you make more mistakes faster than any other invention in human history, with the possible exceptions of handguns and tequila. If builders built buildings the way programmers wrote programs, then the first woodpecker that came along would destroy civilization.
+
+Software is getting slower more rapidly than hardware becomes faster. The Internet? Is that thing still around? No matter how slick the demo is in rehearsal, when you do it in front of a live audience, the probability of a flawless presentation is inversely proportional to the number of people watching, raised to the power of the amount of money involved.
+
+The difference between theory and practice is smaller in theory than in practice. Weeks of coding can save you hours of planning. When debugging, novices insert corrective code; experts remove defective code. Programming is like writing a book, except if you miss out a single comma on page 126, the whole thing makes no sense.
+
+Hardware: The parts of a computer system that can be kicked. Software: The parts of a computer system that can only be cursed at. The question of whether computers can think is like the question of whether submarines can swim. Any sufficiently advanced technology is indistinguishable from magic.
+
+The good news about computers is that they do what you tell them to do. The bad news is that they do what you tell them to do. Computers are incredibly fast, accurate and stupid. Human beings are incredibly slow, inaccurate and brilliant. Together they are powerful beyond imagination.

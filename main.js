@@ -16,7 +16,9 @@ const DOM = {
     freqTableDiv: document.getElementById('freqTable'),
     urlInput: document.getElementById('urlInput'),
     fetchBtn: document.getElementById('fetchBtn'),
-    skipBtn: document.getElementById('skipBtn')
+    skipBtn: document.getElementById('skipBtn'),
+    fileInput: document.getElementById('fileInput'),
+    loadFileBtn: document.getElementById('loadFileBtn')
 };
 
 // 游戏状态
@@ -254,6 +256,61 @@ async function handleFetch() {
     }
 }
 
+function handleFileLoad() {
+    // 清除之前的文件选择
+    DOM.fileInput.value = '';
+    // 触发文件选择对话框
+    DOM.fileInput.click();
+}
+
+function handleFileChange(event) {
+    const file = event.target.files[0];
+    if (!file) {
+        return;
+    }
+    
+    if (!file.name.toLowerCase().endsWith('.txt')) {
+        alert('请选择.txt文件');
+        return;
+    }
+    
+    DOM.targetTextDiv.textContent = '正在读取文件内容...';
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            let content = e.target.result;
+            // 清理和格式化文本内容
+            content = content.replace(/\r\n/g, '\n') // 统一换行符
+                           .replace(/\r/g, '\n')
+                           .replace(/\s+/g, ' ')    // 合并多个空格
+                           .trim();
+            
+            if (content.length === 0) {
+                DOM.targetTextDiv.textContent = '文件内容为空';
+                gameState.targetText = '';
+                return;
+            }
+            
+            gameState.targetText = content;
+            DOM.inputArea.value = '';
+            updateVisibleText();
+            resetGameStats();
+            
+        } catch (error) {
+            DOM.targetTextDiv.textContent = '文件读取失败: ' + error.message;
+            gameState.targetText = '';
+        }
+    };
+    
+    reader.onerror = function() {
+        DOM.targetTextDiv.textContent = '文件读取失败';
+        gameState.targetText = '';
+    };
+    
+    reader.readAsText(file, 'UTF-8');
+}
+
 // 事件监听器注册
 function initEventListeners() {
     DOM.inputArea.addEventListener('keydown', (e) => {
@@ -266,6 +323,8 @@ function initEventListeners() {
     DOM.inputArea.addEventListener('input', handleInput);
     DOM.fetchBtn.addEventListener('click', handleFetch);
     DOM.skipBtn.addEventListener('click', skipCurrentWindow);
+    DOM.loadFileBtn.addEventListener('click', handleFileLoad);
+    DOM.fileInput.addEventListener('change', handleFileChange);
     
     // 点击输入显示区时聚焦到隐藏的输入框
     DOM.inputDisplay.addEventListener('click', () => {
@@ -279,7 +338,8 @@ function initEventListeners() {
         if (relatedTarget && (
             relatedTarget.id === 'urlInput' || 
             relatedTarget.id === 'fetchBtn' || 
-            relatedTarget.id === 'skipBtn'
+            relatedTarget.id === 'skipBtn' ||
+            relatedTarget.id === 'loadFileBtn'
         )) {
             return;
         }
