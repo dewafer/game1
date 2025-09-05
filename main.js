@@ -9,6 +9,7 @@ const CONFIG = {
 const DOM = {
     targetTextDiv: document.getElementById('targetText'),
     inputArea: document.getElementById('inputArea'),
+    inputDisplay: document.getElementById('inputDisplay'),
     errorRateSpan: document.getElementById('errorRate'),
     charSpeedSpan: document.getElementById('charSpeed'),
     wordSpeedSpan: document.getElementById('wordSpeed'),
@@ -31,6 +32,7 @@ function skipCurrentWindow() {
     let skipText = gameState.targetText.slice(start, end);
     DOM.inputArea.value = userInput + skipText;
     updateVisibleText();
+    updateInputDisplay();
 }
 
 function resetGameStats() {
@@ -39,6 +41,7 @@ function resetGameStats() {
     DOM.wordSpeedSpan.textContent = '0 单词/分钟';
     gameState.startTime = null;
     DOM.freqTableDiv.innerHTML = renderFreqTable({});
+    updateInputDisplay();
 }
 
 function updateVisibleText() {
@@ -72,6 +75,37 @@ function updateVisibleText() {
     }
     
     DOM.targetTextDiv.innerHTML = display;
+}
+
+function updateInputDisplay() {
+    let userInput = DOM.inputArea.value;
+    let inputLen = userInput.length;
+    let start = Math.max(0, inputLen - CONFIG.SCROLL_LENGTH);
+    let end = Math.min(inputLen, start + CONFIG.SCROLL_LENGTH);
+    let display = '';
+    
+    // 已输入部分（滚动显示）
+    for (let i = start; i < end; i++) {
+        if (i < gameState.targetText.length) {
+            if (userInput[i] === gameState.targetText[i]) {
+                display += `<span style='color:#4caf50; background:#e8f5e8;'>${userInput[i]}</span>`;
+            } else {
+                display += `<span style='color:#f44336; background:#ffebee;'>${userInput[i]}</span>`;
+            }
+        } else {
+            display += `<span style='color:#666;'>${userInput[i]}</span>`;
+        }
+    }
+    
+    // 添加光标
+    display += '<span style="color:#2196f3;font-weight:bold;">|</span>';
+    
+    // 如果没有内容，显示提示
+    if (inputLen === 0) {
+        display = '<span style="color:#999;">开始输入...</span>';
+    }
+    
+    DOM.inputDisplay.innerHTML = display;
 }
 
 function calculateTypingStats(userInput) {
@@ -129,6 +163,7 @@ function handleInput() {
     const userInput = DOM.inputArea.value;
     updateStatsDisplay(userInput);
     updateVisibleText();
+    updateInputDisplay();
 }
 
 function collectNodesAtDepth(node, depth) {
@@ -231,6 +266,31 @@ function initEventListeners() {
     DOM.inputArea.addEventListener('input', handleInput);
     DOM.fetchBtn.addEventListener('click', handleFetch);
     DOM.skipBtn.addEventListener('click', skipCurrentWindow);
+    
+    // 点击输入显示区时聚焦到隐藏的输入框
+    DOM.inputDisplay.addEventListener('click', () => {
+        DOM.inputArea.focus();
+    });
+    
+    // 只有在输入显示区被点击或者用户在输入时才保持焦点
+    DOM.inputArea.addEventListener('blur', (e) => {
+        // 如果焦点转移到URL输入框或按钮，不要重新聚焦
+        const relatedTarget = e.relatedTarget;
+        if (relatedTarget && (
+            relatedTarget.id === 'urlInput' || 
+            relatedTarget.id === 'fetchBtn' || 
+            relatedTarget.id === 'skipBtn'
+        )) {
+            return;
+        }
+        // 延迟聚焦，让其他元素有机会获得焦点
+        setTimeout(() => {
+            if (document.activeElement === document.body || 
+                document.activeElement === DOM.inputDisplay) {
+                DOM.inputArea.focus();
+            }
+        }, 50);
+    });
 }
 
 // 初始化应用
